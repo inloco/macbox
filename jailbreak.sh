@@ -1,27 +1,52 @@
 #!/bin/sh
 set -ex
 
-VOLUME=$(printf "${DSTVOLUME:-${3:-/Volumes/Macintosh HD}}" | sed -E 's|/$||')
+spctl --master-disable
+spctl developer-mode enable-terminal
 
-# for SERVICE in $(strings "${VOLUME}/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd" | grep '^kTCCService[[:alnum:]]*$' | sed -E 's/^kTCCService//' | grep -v '^$' | sort)
-# do
-#     sqlite3 "${VOLUME}/Library/Application Support/com.apple.TCC/TCC.db" "INSERT INTO access VALUES ('kTCCService${SERVICE}','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);"
-# done
-"${VOLUME}/usr/bin/sqlite3" "${VOLUME}/Library/Application Support/com.apple.TCC/TCC.db" << EOF
-INSERT INTO access VALUES ('kTCCServiceAccessibility','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);
-INSERT INTO access VALUES ('kTCCServiceAppleEvents','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);
-INSERT INTO access VALUES ('kTCCServiceDeveloperTool','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);
-INSERT INTO access VALUES ('kTCCServiceSystemPolicyAllFiles','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);
-INSERT INTO access VALUES ('kTCCServiceSystemPolicySysAdminFiles','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);
+# systemextensionsctl developer on
+
+"${VOLUME}/usr/bin/sqlite3" "${VOLUME}/private/var/db/SystemPolicyConfiguration/KextPolicy" << EOF
+    CREATE TRIGGER IF NOT EXISTS INSERT_OF_allowed_ON_kext_policy AFTER INSERT ON kext_policy FOR EACH ROW WHEN NEW.allowed != 1
+    BEGIN
+        UPDATE kext_policy SET allowed = 1 WHERE team_id = NEW.team_id AND bundle_id = NEW.bundle_id;
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS UPDATE_OF_allowed_ON_kext_policy AFTER UPDATE OF allowed ON kext_policy FOR EACH ROW WHEN NEW.allowed != 1
+    BEGIN
+        UPDATE kext_policy SET allowed = 1 WHERE team_id = NEW.team_id AND bundle_id = NEW.bundle_id;
+    END;
+
+    UPDATE kext_policy SET allowed = 1;
+
+    CREATE TRIGGER IF NOT EXISTS INSERT_OF_flags_ON_kext_policy AFTER INSERT ON kext_policy FOR EACH ROW WHEN NEW.flags != 0
+    BEGIN
+        UPDATE kext_policy SET flags = 0 WHERE team_id = NEW.team_id AND bundle_id = NEW.bundle_id;
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS UPDATE_OF_flags_ON_kext_policy AFTER UPDATE OF flags ON kext_policy FOR EACH ROW WHEN NEW.flags != 0
+    BEGIN
+        UPDATE kext_policy SET flags = 0 WHERE team_id = NEW.team_id AND bundle_id = NEW.bundle_id;
+    END;
+
+    UPDATE kext_policy SET flags = 0;
+
+    CREATE TRIGGER IF NOT EXISTS INSERT_OF_flags_ON_kext_load_history_v3 AFTER INSERT ON kext_load_history_v3 FOR EACH ROW WHEN NEW.flags != 16
+    BEGIN
+        UPDATE kext_load_history_v3 SET flags = 16 WHERE path = NEW.path;
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS UPDATE_OF_flags_ON_kext_load_history_v3 AFTER UPDATE OF flags ON kext_load_history_v3 FOR EACH ROW WHEN NEW.flags != 16
+    BEGIN
+        UPDATE kext_load_history_v3 SET flags = 16 WHERE path = NEW.path;
+    END;
+    
+    UPDATE kext_load_history_v3 SET flags = 16;
 EOF
 
-csrutil disable
-csrutil authenticated-root disable
-
-spctl kext-consent disable
-
-sed -i '' -e 's/^root:\*/root:At666InBFXqls/g' /etc/master.passwd
-mkdir -p /etc/dropbear
-cp /Volumes/packer/dropbear /etc/dropbear
-chmod +x /etc/dropbear/dropbear
-/etc/dropbear/dropbear -RFEBp 2222
+{
+    for SERVICE in $(grep -aoE 'kTCCService\w+' "${VOLUME}/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd" | sed -E 's/^kTCCService//' | grep -v '^$' | sort | uniq)
+    do
+        echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);"
+    done
+} | "${VOLUME}/usr/bin/sqlite3" "${VOLUME}/Library/Application Support/com.apple.TCC/TCC.db"

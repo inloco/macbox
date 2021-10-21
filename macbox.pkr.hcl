@@ -2,11 +2,11 @@ packer {
   required_version = ">= 1.7.0"
 }
 
-source "vmware-iso" "vmware-jailed" {
+source "vmware-iso" "macbox" {
   # VMware-ISO Builder Configuration Reference
   disk_size = 64000
   cdrom_adapter_type = "sata"
-  guest_os_type = "darwin20-64"
+  guest_os_type = "darwin21-64"
   version = 18
   // vm_name
   // vmx_disk_template_path
@@ -19,8 +19,8 @@ source "vmware-iso" "vmware-jailed" {
   disk_type_id = 0
 
   # ISO Configuration
-  iso_checksum = "file:./build/Install macOS Big Sur.cdr.sum"
-  iso_url = "./build/Install macOS Big Sur.cdr"
+  iso_checksum = "file:./build/Install macOS.cdr.sum"
+  iso_url = "./build/Install macOS.cdr"
   // iso_urls = []
   // iso_target_path = ""
   // iso_target_extension = ""
@@ -55,7 +55,7 @@ source "vmware-iso" "vmware-jailed" {
   // vrdp_port_max = 6000
 
   # Shutdown configuration
-  shutdown_command = "sudo shutdown -h now"
+  shutdown_command = "sudo /var/root/.local/bin/poweroff"
   // shutdown_timeout = "5m"
   // post_shutdown_delay = "0s"
   // disable_shutdown = false
@@ -97,7 +97,7 @@ source "vmware-iso" "vmware-jailed" {
   // display_name = ""
 
   # Export configuration
-  format = "ovf"
+  format = "vmx"
   // ovftool_options = []
   // skip_export = false
   // keep_registered = false
@@ -118,15 +118,15 @@ source "vmware-iso" "vmware-jailed" {
 
   # Boot Configuration
   // boot_keygroup_interval = "500ms"
-  boot_wait = "2m30s"
+  boot_wait = "1m"
   boot_command = [
-    "<enter><wait2s500ms>",
-    "<leftSuperOn><f5><leftSuperOff><wait2s500ms>",
+    "<enter><wait1s250ms>",
+    "<leftSuperOn><f5><leftSuperOff><wait1s250ms>",
     "<leftCtrlOn><leftAltOn>m<leftAltOff><leftCtrlOff>",
     "u<enter>",
     "t<enter>",
-    "<leftSuperOn><f5><leftSuperOff><wait2s500ms>",
-    ". /Volumes/packer/install.sh<enter><wait2s500ms>",
+    "<leftSuperOn><f5><leftSuperOff><wait1s250ms>",
+    ". /Volumes/packer/install.sh<enter><wait1s250ms>",
   ]
 
   # SSH key pair automation
@@ -134,9 +134,21 @@ source "vmware-iso" "vmware-jailed" {
 }
 
 build {
-  name = "vmware-jailed"
+  name = "macbox"
 
   sources = [
-    "sources.vmware-iso.vmware-jailed",
+    "sources.vmware-iso.macbox",
   ]
+
+  post-processors {
+    post-processor "vagrant" {
+      keep_input_artifact = false
+    }
+
+    // post-processor "vagrant-cloud" {
+    //   access_token = "${var.cloud_token}"
+    //   box_tag      = "hashicorp/precise64"
+    //   version      = "${local.version}"
+    // }
+  }
 }
