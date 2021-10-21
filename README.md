@@ -1,2 +1,2 @@
-# macos-box
+# MacBox
 macOS Vagrant Box built with Packer

@@ -103,14 +103,23 @@ def make_casa(build_version='$(sw_vers -buildVersion)'):
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
 
 
-def make_calw(user='user'):
+def make_calw_home(home='${HOME}'):
+    props = {
+        'LoginHook': f'{home}/.local/bin/loginhook',
+        'LogoutHook': f'{home}/.local/bin/logouthook',
+    }
+
+    return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
+
+
+def make_calw_root(user='user'):
     props = {
         'autoLoginUser': user,
         'loginWindowIdleTime': 0,
     }
 
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
-        
+
 
 def plist2sh(plist, patch=False):
     value_of = lambda e: switch[type(e)](e)
@@ -176,18 +185,25 @@ if __name__ == '__main__':
         f.write(a_sh)
 
     sa_plist = make_casa()
-    with open(f'{d}/com.apple.SetupAssistant.plist', 'wb') as f:
+    with open(f'{d}/SetupAssistant.plist', 'wb') as f:
         f.write(sa_plist)
     sa_sh = plist2sh(sa_plist)
-    with open(f'{d}/com.apple.SetupAssistant.sh', 'wb') as f:
+    with open(f'{d}/SetupAssistant.sh', 'wb') as f:
         f.write(sa_sh)
 
-    lw_plist = make_calw()
-    with open(f'{d}/com.apple.loginwindow.plist', 'wb') as f:
-        f.write(lw_plist)
-    lw_sh = plist2sh(lw_plist)
-    with open(f'{d}/com.apple.loginwindow.sh', 'wb') as f:
-        f.write(lw_sh)
+    lw_home_plist = make_calw_home()
+    with open(f'{d}/loginwindow_home.plist', 'wb') as f:
+        f.write(lw_home_plist)
+    lw_home_sh = plist2sh(lw_home_plist)
+    with open(f'{d}/loginwindow_home.sh', 'wb') as f:
+        f.write(lw_home_sh)
+
+    lw_root_plist = make_calw_root()
+    with open(f'{d}/loginwindow_root.plist', 'wb') as f:
+        f.write(lw_root_plist)
+    lw_root_sh = plist2sh(lw_root_plist)
+    with open(f'{d}/loginwindow_root.sh', 'wb') as f:
+        f.write(lw_root_sh)
 
     kcpw = make_kcpassword()
     with open(f'{d}/kcpassword', 'wb') as f:
