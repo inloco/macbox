@@ -51,12 +51,27 @@ build/Install\ macOS.cdr.sum: build/Install\ macOS.cdr
 	@printf '${BLD}${YLW}$$${RST} '
 	sha256sum build/Install\ macOS.cdr > build/Install\ macOS.cdr.sum
 
-build/user.sh build/admin.sh build/SetupAssistant.sh build/loginwindow_home.sh build/loginwindow_root.sh build/kcpassword: make.py build/...
+build/authorized_keys:
+	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
+	@printf '${BLD}${YLW}$$${RST} '
+	wget -O build/authorized_keys https://raw.githubusercontent.com/hashicorp/vagrant/HEAD/keys/vagrant.pub
+
+build/id_rsa:
+	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
+	@printf '${BLD}${YLW}$$${RST} '
+	wget -O build/id_rsa https://raw.githubusercontent.com/hashicorp/vagrant/HEAD/keys/vagrant
+
+build/id_rsa.pub:
+	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
+	@printf '${BLD}${YLW}$$${RST} '
+	wget -O build/id_rsa.pub https://raw.githubusercontent.com/hashicorp/vagrant/HEAD/keys/vagrant.pub
+
+build/user.sh build/group.sh build/screensaver_root.sh build/screensaver_host.sh build/SetupAssistant.sh build/loginwindow_root.sh build/loginwindow_home.sh build/kcpassword: make.py build/...
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
 	python3 make.py
 
-build/MacBox.pkg: MacBox.pkgproj postinstall.sh setup.sh jailbreak.sh logouthook.sh build/user.sh build/admin.sh build/SetupAssistant.sh build/loginwindow_home.sh build/loginwindow_root.sh build/kcpassword
+build/MacBox.pkg: MacBox.pkgproj postinstall.sh setup.sh jailbreak.sh logouthook.sh build/authorized_keys build/id_rsa build/id_rsa.pub build/user.sh build/group.sh build/screensaver_root.sh build/screensaver_host.sh build/SetupAssistant.sh build/loginwindow_root.sh build/loginwindow_home.sh build/kcpassword
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
 	packagesbuild -v MacBox.pkgproj

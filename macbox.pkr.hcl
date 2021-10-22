@@ -110,10 +110,10 @@ source "vmware-iso" "macbox" {
   // host_port_max = 4444
   // skip_nat_mapping = false
   // ...
-  ssh_username = "user"
-  ssh_password = "pass"
+  ssh_username = "vagrant"
+  ssh_password = "vagrant"
   // ...
-  ssh_timeout = "90m"
+  ssh_timeout = "30m"
   // ...
 
   # Boot Configuration
@@ -147,7 +147,7 @@ build {
 
     // post-processor "vagrant-cloud" {
     //   access_token = "${var.cloud_token}"
-    //   box_tag      = "hashicorp/precise64"
+    //   box_tag      = "incognia/macos"
     //   version      = "${local.version}"
     // }
   }
