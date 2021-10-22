@@ -3,7 +3,7 @@ import hashlib
 import plistlib
 
 
-def make_hash(password='pass', salt=b'\0'*32, iterations=1):
+def make_hash(password='vagrant', salt=b'\0'*32, iterations=1):
     entropy = hashlib.pbkdf2_hmac('sha512', bytes(map(ord, password)), salt, iterations, dklen=128)
 
     shadow_hash_data = {
@@ -17,7 +17,7 @@ def make_hash(password='pass', salt=b'\0'*32, iterations=1):
     return plistlib.dumps(shadow_hash_data, fmt=plistlib.FMT_BINARY)
 
 
-def make_user(realname='User', shadow_hash_data=make_hash()):
+def make_user(realname='Vagrant', shadow_hash_data=make_hash()):
     user = realname.split(' ')[0].lower()
 
     attributes = {
@@ -53,7 +53,7 @@ def make_user(realname='User', shadow_hash_data=make_hash()):
     return plistlib.dumps(attributes, fmt=plistlib.FMT_BINARY)
 
 
-def make_admin(user='user'):
+def make_group(user='vagrant'):
     props = {
         'groupmembers': [
             '00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF',
@@ -61,6 +61,22 @@ def make_admin(user='user'):
         'users': [
             user,
         ],
+    }
+
+    return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
+
+
+def make_cass_root():
+    props = {
+        'loginWindowIdleTime': 0,
+    }
+
+    return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
+
+
+def make_cass_host():
+    props = {
+        'idleTime': 0,
     }
 
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
@@ -103,19 +119,18 @@ def make_casa(build_version='$(sw_vers -buildVersion)'):
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
 
 
-def make_calw_home(home='${HOME}'):
+def make_calw_root(user='vagrant'):
     props = {
-        'LoginHook': f'{home}/.local/bin/loginhook',
-        'LogoutHook': f'{home}/.local/bin/logouthook',
+        'autoLoginUser': user,
     }
 
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
 
 
-def make_calw_root(user='user'):
+def make_calw_home(home='${HOME}'):
     props = {
-        'autoLoginUser': user,
-        'loginWindowIdleTime': 0,
+        'LoginHook': f'{home}/.local/bin/loginhook',
+        'LogoutHook': f'{home}/.local/bin/logouthook',
     }
 
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
@@ -150,7 +165,7 @@ def plist2sh(plist, patch=False):
     return sh
 
 
-def make_kcpassword(password='pass'):
+def make_kcpassword(password='vagrant'):
     key = [0x7D, 0x89, 0x52, 0x23, 0xD2, 0xBC, 0xDD, 0xEA, 0xA3, 0xB9, 0x1F]
     key_len = len(key)
     key_val = lambda i: key[i % key_len]
@@ -177,12 +192,26 @@ if __name__ == '__main__':
     with open(f'{d}/user.sh', 'wb') as f:
         f.write(u_sh)
 
-    a_plist = make_admin()
-    with open(f'{d}/admin.plist', 'wb') as f:
-        f.write(a_plist)
-    a_sh = plist2sh(a_plist, patch=True)
-    with open(f'{d}/admin.sh', 'wb') as f:
-        f.write(a_sh)
+    g_plist = make_group()
+    with open(f'{d}/group.plist', 'wb') as f:
+        f.write(g_plist)
+    g_sh = plist2sh(g_plist, patch=True)
+    with open(f'{d}/group.sh', 'wb') as f:
+        f.write(g_sh)
+
+    ss_root_plist = make_cass_root()
+    with open(f'{d}/screensaver_root.plist', 'wb') as f:
+        f.write(ss_root_plist)
+    ss_root_sh = plist2sh(ss_root_plist)
+    with open(f'{d}/screensaver_root.sh', 'wb') as f:
+        f.write(ss_root_sh)
+
+    ss_host_plist = make_cass_host()
+    with open(f'{d}/screensaver_host.plist', 'wb') as f:
+        f.write(ss_host_plist)
+    ss_host_sh = plist2sh(ss_host_plist)
+    with open(f'{d}/screensaver_host.sh', 'wb') as f:
+        f.write(ss_host_sh)
 
     sa_plist = make_casa()
     with open(f'{d}/SetupAssistant.plist', 'wb') as f:
@@ -191,19 +220,19 @@ if __name__ == '__main__':
     with open(f'{d}/SetupAssistant.sh', 'wb') as f:
         f.write(sa_sh)
 
-    lw_home_plist = make_calw_home()
-    with open(f'{d}/loginwindow_home.plist', 'wb') as f:
-        f.write(lw_home_plist)
-    lw_home_sh = plist2sh(lw_home_plist)
-    with open(f'{d}/loginwindow_home.sh', 'wb') as f:
-        f.write(lw_home_sh)
-
     lw_root_plist = make_calw_root()
     with open(f'{d}/loginwindow_root.plist', 'wb') as f:
         f.write(lw_root_plist)
     lw_root_sh = plist2sh(lw_root_plist)
     with open(f'{d}/loginwindow_root.sh', 'wb') as f:
         f.write(lw_root_sh)
+
+    lw_home_plist = make_calw_home()
+    with open(f'{d}/loginwindow_home.plist', 'wb') as f:
+        f.write(lw_home_plist)
+    lw_home_sh = plist2sh(lw_home_plist)
+    with open(f'{d}/loginwindow_home.sh', 'wb') as f:
+        f.write(lw_home_sh)
 
     kcpw = make_kcpassword()
     with open(f'{d}/kcpassword', 'wb') as f:
