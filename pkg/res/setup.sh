@@ -1,18 +1,13 @@
 #!/bin/sh
 set -ex
 
-PEDPLIST="$(mktemp -d)/IOPlatformExpertDevice.plist"
-ioreg -a -c IOPlatformExpertDevice -d 2 > "${PEDPLIST}"
-
-HOSTUUID="$(/usr/libexec/PlistBuddy -c 'Print :IORegistryEntryChildren:0:IOPlatformUUID' "${PEDPLIST}")"
-
-DOMAIN="${VOLUME}/System/Library/User Template/Non_localized/Library/Preferences/ByHost/com.apple.screensaver.${HOSTUUID}"
+DOMAIN="${TPLBASE}/Library/Preferences/ByHost/com.apple.screensaver.${HOSTUUID}"
 . ./screensaver_host.sh
 
-DOMAIN="${VOLUME}/System/Library/User Template/Non_localized/Library/Preferences/com.apple.SetupAssistant"
+DOMAIN="${TPLBASE}/Library/Preferences/com.apple.SetupAssistant"
 . ./SetupAssistant.sh
 
-if [ -z "${VOLUME}" ]
+if [ -z "${VOLBASE}" ]
 then
 	sysadminctl -addUser vagrant -fullName Vagrant -UID 501 -password vagrant -admin
 	# dscl . -create /Users/vagrant
@@ -26,23 +21,23 @@ then
 	# dscl . -append /Groups/admin GroupMembers 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
 	# dscl . -append /Groups/admin GroupMembership vagrant
 else
-	DOMAIN="${VOLUME}/private/var/db/dslocal/nodes/Default/users/vagrant"
+	DOMAIN="${VOLBASE}/private/var/db/dslocal/nodes/Default/users/vagrant"
 	. ./user.sh
 
-	DOMAIN="${VOLUME}/private/var/db/dslocal/nodes/Default/groups/admin"
+	DOMAIN="${VOLBASE}/private/var/db/dslocal/nodes/Default/groups/admin"
 	. ./group.sh
 fi
 
-DOMAIN="${VOLUME}/Library/Preferences/com.apple.screensaver"
+DOMAIN="${VOLBASE}/Library/Preferences/com.apple.screensaver"
 . ./screensaver_root.sh
 
-DOMAIN="${VOLUME}/Library/Preferences/com.apple.loginwindow"
+DOMAIN="${VOLBASE}/Library/Preferences/com.apple.loginwindow"
 . ./loginwindow_root.sh
 
-cp ./kcpassword "${VOLUME}/private/etc/kcpassword"
+cp ./kcpassword "${VOLBASE}/private/etc/kcpassword"
 
-SUDOER="${VOLUME}/private/etc/sudoers.d/vagrant"
-mkdir -p "$(dirname ${SUDOER})"
+SUDOER="${VOLBASE}/private/etc/sudoers.d/vagrant"
+mkdir -p "$(dirname "${SUDOER}")"
 printf 'vagrant\t\tALL = (ALL) NOPASSWD: ALL\n' > "${SUDOER}"
 
 systemsetup -setsleep Never
@@ -52,15 +47,15 @@ DOMAIN="${HOME}/Library/Preferences/com.apple.loginwindow"
 . ./loginwindow_home.sh
 
 LOGINHOOK="$(defaults read ${DOMAIN} LoginHook)"
-mkdir -p "$(dirname ${LOGINHOOK})"
+mkdir -p "$(dirname "${LOGINHOOK}")"
 cp -f ./loginhook.sh "${LOGINHOOK}"
 
 LOGOUTHOOK="$(defaults read ${DOMAIN} LogoutHook)"
-mkdir -p "$(dirname ${LOGOUTHOOK})"
+mkdir -p "$(dirname "${LOGOUTHOOK}")"
 cp -f ./logouthook.sh "${LOGOUTHOOK}"
 
 POWEROFF="${HOME}/.local/bin/poweroff"
-mkdir -p "$(dirname ${POWEROFF})"
+mkdir -p "$(dirname "${POWEROFF}")"
 cp -f ./poweroff.applescript "${POWEROFF}"
 
 DOTSSH="$(eval echo ~$(id -un 501))/.ssh"
@@ -83,4 +78,4 @@ cp -f ./id_rsa "${IDRSAPUB}"
 chown 501:20 "${IDRSAPUB}"
 chmod 644 "${IDRSAPUB}"
 
-touch "${VOLUME}/private/var/db/.AppleSetupDone"
+touch "${VOLBASE}/private/var/db/.AppleSetupDone"

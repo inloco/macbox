@@ -43,7 +43,7 @@ build/user.sh build/group.sh build/screensaver_root.sh build/screensaver_host.sh
 	@printf '${BLD}${YLW}$$${RST} '
 	python3 make.py
 
-build/MacBox.pkg: MacBox.pkgproj postinstall.sh res/setup.sh res/jailbreak.sh res/loginhook.sh res/logouthook.sh res/poweroff.applescript build/authorized_keys build/id_rsa build/id_rsa.pub build/user.sh build/group.sh build/screensaver_root.sh build/screensaver_host.sh build/SetupAssistant.sh build/loginwindow_root.sh build/loginwindow_home.sh build/kcpassword
+build/MacBox.pkg: MacBox.pkgproj postinstall.sh res/jailbreak.sh res/setup.sh res/loginhook.sh res/logouthook.sh res/poweroff.applescript build/authorized_keys build/id_rsa build/id_rsa.pub build/user.sh build/group.sh build/screensaver_root.sh build/screensaver_host.sh build/SetupAssistant.sh build/loginwindow_root.sh build/loginwindow_home.sh build/kcpassword
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
 	packagesbuild -v MacBox.pkgproj
