@@ -2,18 +2,18 @@
 set -ex
 
 function pidof {
-    ps -ce | awk '$4 == "'"${1}"'" { print $1 }' | paste -sd ' ' -
+	ps -ce | awk '$4 == "'"${1}"'" { print $1 }' | paste -sd ' ' -
 }
 
 {
-    trap $'kill -s USR1 $(pidof startosinstall)' SIGUSR1
+	trap $'kill -s USR1 $(pidof startosinstall)' SIGUSR1
 
-    set +x
+	set +x
 
-    while true
-    do
-        sleep 1
-    done
+	while true
+	do
+		sleep 1
+	done
 } &
 SIGPID="${!}"
 
@@ -22,7 +22,7 @@ DIRNAME="$(echo -n ${BASH_SOURCE[0]} | sed -E 's|^([^/]+)$|./\1|' | sed -E 's|^(
 
 for PKG in "${DIRNAME}/MacBox.pkg" /Volumes/VMware*/Install*.app/Contents/Resources/VMware*.pkg
 do
-    ARGS+=('--installpackage' "${PKG}")
+	ARGS+=('--installpackage' "${PKG}")
 done
 
 diskutil eraseDisk APFS "${VOLNAME}" disk0
