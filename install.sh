@@ -33,9 +33,7 @@ kill -s KILL "${SIGPID}"
 nvram boot-args='serverperfmode=1 -v'
 nvram -d platform-uuid
 
-spctl kext-consent add 4C6364ACXT
 spctl kext-consent add EG7KH642X6
-spctl kext-consent add VB5E2TV963
 spctl kext-consent disable
 
 csrutil authenticated-root disable

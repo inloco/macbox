@@ -44,9 +44,38 @@ spctl developer-mode enable-terminal
     UPDATE kext_load_history_v3 SET flags = 16;
 EOF
 
-{
-    for SERVICE in $(grep -aoE 'kTCCService\w+' "${VOLUME}/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd" | sed -E 's/^kTCCService//' | grep -v '^$' | sort | uniq)
-    do
-        echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','/usr/libexec/sshd-keygen-wrapper',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,0);"
-    done
-} | "${VOLUME}/usr/bin/sqlite3" "${VOLUME}/Library/Application Support/com.apple.TCC/TCC.db"
+SERVICES=($(grep -aoE 'kTCCService\w+' "${VOLUME}/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd" | sed -E 's/^kTCCService//' | grep -v '^$' | sort | uniq))
+CLIENTS0=('com.apple.CoreSimulator.SimulatorTrampoline' 'com.apple.dt.Xcode-Helper' 'com.apple.Terminal')
+CLIENTS1=('/Library/Application Support/VMware Tools/vmware-tools-daemon' '/usr/libexec/sshd-keygen-wrapper')
+OBJECTS0=('UNUSED' 'com.apple.finder' 'com.apple.systemevents')
+OBJECTS1=()
+for BASE in "${VOLUME}" "$(eval echo ~$(id -un 501))"
+do
+    {
+        for SERVICE in "${SERVICES[@]}"
+        do
+            for CLIENT in "${CLIENTS0[@]}"
+            do
+                for OBJECT in "${OBJECTS0[@]}"
+                do
+                    echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',0,2,4,1,NULL,NULL,0,'${OBJECT}',NULL,0,0);"
+                done
+                for OBJECT in "${OBJECTS1[@]}"
+                do
+                    echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',0,2,4,1,NULL,NULL,1,'${OBJECT}',NULL,0,0);"
+                done
+            done
+            for CLIENT in "${CLIENTS1[@]}"
+            do
+                for OBJECT in "${OBJECTS0[@]}"
+                do
+                    echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',1,2,4,1,NULL,NULL,0,'${OBJECT}',NULL,0,0);"
+                done
+                for OBJECT in "${OBJECTS1[@]}"
+                do
+                    echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',1,2,4,1,NULL,NULL,1,'${OBJECT}',NULL,0,0);"
+                done
+            done
+        done
+    } | "${VOLUME}/usr/bin/sqlite3" "${BASE}/Library/Application Support/com.apple.TCC/TCC.db"
+done
