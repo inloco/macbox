@@ -39,7 +39,7 @@ source "vmware-iso" "macbox" {
 
   # CD configuration
   cd_files = [
-    "./build/MacBox.pkg",
+    "../pkg/build/MacBox.pkg",
     "./install.sh",
   ]
   // cd_label = "packer"
