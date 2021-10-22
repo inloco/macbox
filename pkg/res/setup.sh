@@ -14,23 +14,23 @@ DOMAIN="${VOLUME}/System/Library/User Template/Non_localized/Library/Preferences
 
 if [ -z "${VOLUME}" ]
 then
-    sysadminctl -addUser vagrant -fullName Vagrant -UID 501 -password vagrant -admin
-    # dscl . -create /Users/vagrant
-    # dscl . -create /Users/vagrant GeneratedUID 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
-    # dscl . -create /Users/vagrant NFSHomeDirectory /Users/vagrant
-    # dscl . -create /Users/vagrant PrimaryGroupID 20
-    # dscl . -create /Users/vagrant RealName Vagrant
-    # dscl . -create /Users/vagrant UniqueID 501
-    # dscl . -create /Users/vagrant UserShell /bin/zsh
-    # dscl . -passwd /Users/vagrant vagrant
-    # dscl . -append /Groups/admin GroupMembers 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
-    # dscl . -append /Groups/admin GroupMembership vagrant
+	sysadminctl -addUser vagrant -fullName Vagrant -UID 501 -password vagrant -admin
+	# dscl . -create /Users/vagrant
+	# dscl . -create /Users/vagrant GeneratedUID 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
+	# dscl . -create /Users/vagrant NFSHomeDirectory /Users/vagrant
+	# dscl . -create /Users/vagrant PrimaryGroupID 20
+	# dscl . -create /Users/vagrant RealName Vagrant
+	# dscl . -create /Users/vagrant UniqueID 501
+	# dscl . -create /Users/vagrant UserShell /bin/zsh
+	# dscl . -passwd /Users/vagrant vagrant
+	# dscl . -append /Groups/admin GroupMembers 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
+	# dscl . -append /Groups/admin GroupMembership vagrant
 else
-    DOMAIN="${VOLUME}/private/var/db/dslocal/nodes/Default/users/vagrant"
-    . ./user.sh
+	DOMAIN="${VOLUME}/private/var/db/dslocal/nodes/Default/users/vagrant"
+	. ./user.sh
 
-    DOMAIN="${VOLUME}/private/var/db/dslocal/nodes/Default/groups/admin"
-    . ./group.sh
+	DOMAIN="${VOLUME}/private/var/db/dslocal/nodes/Default/groups/admin"
+	. ./group.sh
 fi
 
 DOMAIN="${VOLUME}/Library/Preferences/com.apple.screensaver"
