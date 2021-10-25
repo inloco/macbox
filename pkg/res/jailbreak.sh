@@ -47,18 +47,32 @@ TCCVOL="${VOLBASE}${TCC}"
 TCCTPL="${TPLBASE}${TCC}"
 
 SERVICES=($(grep -aoE 'kTCCService\w+' "${VOLBASE}/System/Library/PrivateFrameworks/TCC.framework/Resources/tccd" | sed -E 's/^kTCCService//' | grep -v '^$' | sort | uniq))
-CLIENTS=('com.apple.CoreSimulator.SimulatorTrampoline' 'com.apple.dt.Xcode-Helper' 'com.apple.Terminal' '/Library/Application Support/VMware Tools/vmware-tools-daemon' '/usr/libexec/sshd-keygen-wrapper')
-OBJECTS=('UNUSED' 'com.apple.finder' 'com.apple.systemevents')
+CLIENTS0=('com.apple.CoreSimulator.SimulatorTrampoline' 'com.apple.dt.Xcode-Helper' 'com.apple.Terminal')
+CLIENTS1=('/Library/Application Support/VMware Tools/vmware-tools-daemon' '/usr/libexec/sshd-keygen-wrapper')
+OBJECTS0=('UNUSED' 'com.apple.finder' 'com.apple.systemevents')
+OBJECTS1=()
 {
 	for SERVICE in "${SERVICES[@]}"
 	do
-		for CLIENT in "${CLIENTS[@]}"
+		for CLIENT in "${CLIENTS0[@]}"
 		do
-			for OBJECT in "${OBJECTS[@]}"
+			for OBJECT in "${OBJECTS0[@]}"
 			do
 				echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',0,2,4,1,NULL,NULL,0,'${OBJECT}',NULL,0,0);"
+			done
+			for OBJECT in "${OBJECTS1[@]}"
+			do
 				echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',0,2,4,1,NULL,NULL,1,'${OBJECT}',NULL,0,0);"
+			done
+		done
+		for CLIENT in "${CLIENTS1[@]}"
+		do
+			for OBJECT in "${OBJECTS0[@]}"
+			do
 				echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',1,2,4,1,NULL,NULL,0,'${OBJECT}',NULL,0,0);"
+			done
+			for OBJECT in "${OBJECTS1[@]}"
+			do
 				echo "INSERT INTO access VALUES ('kTCCService${SERVICE}','${CLIENT}',1,2,4,1,NULL,NULL,1,'${OBJECT}',NULL,0,0);"
 			done
 		done
