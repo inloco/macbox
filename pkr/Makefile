@@ -51,7 +51,7 @@ build/Install\ macOS.cdr.sum: build/Install\ macOS.cdr
 	@printf '${BLD}${YLW}$$${RST} '
 	sha256sum build/Install\ macOS.cdr > build/Install\ macOS.cdr.sum
 
-packer_macbox_vmware.box: macbox.pkr.hcl install.sh build/Install\ macOS.cdr.sum ../pkg/build/MacBox.pkg 
+packer_macbox_vmware.box: macbox.pkr.hcl install.sh build/Install\ macOS.cdr build/Install\ macOS.cdr.sum ../pkg/build/MacBox.pkg 
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
 	packer build macbox.pkr.hcl

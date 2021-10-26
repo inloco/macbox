@@ -18,7 +18,7 @@ function pidof {
 SIGPID="${!}"
 
 VOLNAME='Macintosh HD'
-DIRNAME="$(echo -n ${BASH_SOURCE[0]} | sed -E 's|^([^/]+)$|./\1|' | sed -E 's|^(.*)/([^/]+)$|\1|')"
+DIRNAME="$(echo -n "${BASH_SOURCE[0]}" | sed -E 's|^([^/]+)$|./\1|' | sed -E 's|^(.*)/([^/]+)$|\1|')"
 
 for PKG in "${DIRNAME}/MacBox.pkg" /Volumes/VMware*/Install*.app/Contents/Resources/VMware*.pkg
 do
