@@ -41,12 +41,12 @@ build/Install\ macOS.sparseimage: /Applications/Install\ macOS\ *.app build/...
 	@printf '${BLD}${YLW}$$${RST} '
 	hdiutil resize -size min build/Install\ macOS.sparseimage
 
-build/Install\ macOS.cdr: build/Install\ macOS.sparseimage
+build/Install\ macOS.cdr: build/... build/Install\ macOS.sparseimage
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
 	hdiutil convert -format UDTO -o build/Install\ macOS.cdr build/Install\ macOS.sparseimage
 
-build/Install\ macOS.cdr.sum: build/Install\ macOS.cdr
+build/Install\ macOS.cdr.sum: build/... build/Install\ macOS.cdr
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
 	sha256sum build/Install\ macOS.cdr > build/Install\ macOS.cdr.sum
