@@ -52,6 +52,7 @@ CLIENTS1=('/Library/Application Support/VMware Tools/vmware-tools-daemon' '/usr/
 OBJECTS0=('UNUSED' 'com.apple.finder' 'com.apple.systemevents')
 OBJECTS1=()
 {
+	echo 'BEGIN EXCLUSIVE TRANSACTION;'
 	for SERVICE in "${SERVICES[@]}"
 	do
 		for CLIENT in "${CLIENTS0[@]}"
@@ -77,6 +78,7 @@ OBJECTS1=()
 			done
 		done
 	done
+	echo 'COMMIT TRANSACTION;'
 } | "${VOLBASE}/usr/bin/sqlite3" "${TCCVOL}"
 
 mkdir -p "$(dirname "${TCCTPL}")"
