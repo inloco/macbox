@@ -21,7 +21,7 @@ source "vmware-iso" "macbox" {
   disk_type_id      = 0
 
   # ISO Configuration
-  iso_checksum = "file:./build/Install macOS.cdr.sum"
+  iso_checksum = "none"
   iso_url      = "./build/Install macOS.cdr"
 
   # CD configuration
