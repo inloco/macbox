@@ -54,4 +54,6 @@ build/Install\ macOS.cdr.sum: build/... build/Install\ macOS.cdr
 packer_macbox_vmware.box: macbox.pkr.hcl install.sh build/Install\ macOS.cdr build/Install\ macOS.cdr.sum ../pkg/build/MacBox.pkg 
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
+	packer init macbox.pkr.hcl
+	@printf '${BLD}${YLW}$$${RST} '
 	packer build macbox.pkr.hcl
