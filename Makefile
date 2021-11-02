@@ -9,19 +9,19 @@ EOL := \n
 all:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
-	make -C pkg/ all
+	$(MAKE) -C pkg/ all
 	@printf '${BLD}${YLW}$$${RST} '
-	make -C pkr/ all
+	$(MAKE) -C pkr/ all
 	@printf '${BLD}${YLW}$$${RST} '
-	make -C oci/ all
+	$(MAKE) -C oci/ all
 .PHONY: all
 
 clean:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
-	make -C pkg/ clean
+	$(MAKE) -C pkg/ clean
 	@printf '${BLD}${YLW}$$${RST} '
-	make -C pkr/ clean
+	$(MAKE) -C pkr/ clean
 	@printf '${BLD}${YLW}$$${RST} '
-	make -C oci/ clean
+	$(MAKE) -C oci/ clean
 .PHONY: clean
