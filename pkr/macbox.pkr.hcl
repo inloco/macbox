@@ -41,6 +41,9 @@ source "vmware-iso" "macbox" {
   network_adapter_type = "e1000e"
   usb                  = true
 
+  # Run configuration
+  headless = true
+
   # VMX configuration
   vmx_data = {
     "isolation.tools.hgfs.disable" = "TRUE"
