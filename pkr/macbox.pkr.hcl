@@ -34,8 +34,8 @@ source "vmware-iso" "macbox" {
   shutdown_command = "sudo /var/root/.local/bin/poweroff"
 
   # Hardware configuration
-  cores                = 2
-  cpus                 = 4
+  cores                = 1
+  cpus                 = 2
   memory               = 8192
   network              = "nat"
   network_adapter_type = "e1000e"
