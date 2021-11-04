@@ -11,18 +11,18 @@ packer {
 
 source "vmware-iso" "macbox" {
   # VMware-ISO Builder Configuration Reference
-  disk_size = 256000
+  disk_size          = 256000
   cdrom_adapter_type = "sata"
-  guest_os_type = "darwin21-64"
-  version = 18
+  guest_os_type      = "darwin21-64"
+  version            = 18
 
   # Extra Disk Configuration
   disk_adapter_type = "nvme"
-  disk_type_id = 0
+  disk_type_id      = 0
 
   # ISO Configuration
   iso_checksum = "file:./build/Install macOS.cdr.sum"
-  iso_url = "./build/Install macOS.cdr"
+  iso_url      = "./build/Install macOS.cdr"
 
   # CD configuration
   cd_files = [
@@ -34,26 +34,26 @@ source "vmware-iso" "macbox" {
   shutdown_command = "sudo /var/root/.local/bin/poweroff"
 
   # Hardware configuration
-  cores = 2
-  cpus = 4
-  memory = 8192
-  network = "nat"
+  cores                = 2
+  cpus                 = 4
+  memory               = 8192
+  network              = "nat"
   network_adapter_type = "e1000e"
-  usb = true
+  usb                  = true
 
   # VMX configuration
   vmx_data = {
-    "isolation.tools.hgfs.disable": "TRUE",
-    "sata0:1.deviceType": "cdrom-image",
-    "sata0:1.fileName": "/Applications/VMware Fusion.app/Contents/Library/isoimages/darwin.iso",
-    "sata0:1.present": "TRUE",
-    "sata1.present": "TRUE",
-    "smbios.restrictSerialCharset": "TRUE",
-    "smc.present": "TRUE",
-    "ulm.disableMitigations": "TRUE",
+    "isolation.tools.hgfs.disable" = "TRUE"
+    "sata0:1.deviceType"           = "cdrom-image"
+    "sata0:1.fileName"             = "/Applications/VMware Fusion.app/Contents/Library/isoimages/darwin.iso"
+    "sata0:1.present"              = "TRUE"
+    "sata1.present"                = "TRUE"
+    "smbios.restrictSerialCharset" = "TRUE"
+    "smc.present"                  = "TRUE"
+    "ulm.disableMitigations"       = "TRUE"
   }
   vmx_data_post = {
-    "bios.bootorder": "hdd"
+    "bios.bootorder" = "hdd"
   }
   vmx_remove_ethernet_interfaces = true
 
@@ -64,7 +64,7 @@ source "vmware-iso" "macbox" {
   communicator = "ssh"
   ssh_username = "vagrant"
   ssh_password = "vagrant"
-  ssh_timeout = "30m"
+  ssh_timeout  = "30m"
 
   # Boot Configuration
   boot_wait = "1m"
@@ -86,15 +86,13 @@ build {
     "sources.vmware-iso.macbox",
   ]
 
-  post-processors {
-    post-processor "shell-local" {
-      inline = [
-        "sed -E -e '/^(checkpoint|cleanshutdown|ehci|floppy|gui|hgfs|parallel|remotedisplay|replay|sata|scsi|serial|sound|vmci|vmotion)[ .0-9:]/d' -i '' './output-{{build_name}}/packer-{{build_name}}.vmx'",
-      ]
-    }
+  post-processor "shell-local" {
+    inline = [
+      "sed -E -e '/^(checkpoint|cleanshutdown|ehci|floppy|gui|hgfs|parallel|remotedisplay|replay|sata|scsi|serial|sound|vmci|vmotion)[ .0-9:]/d' -i '' './output-{{build_name}}/packer-{{build_name}}.vmx'",
+    ]
+  }
 
-    post-processor "vagrant" {
-      compression_level = 9
-    }
+  post-processor "vagrant" {
+    compression_level = 9
   }
 }

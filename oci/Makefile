@@ -6,22 +6,25 @@ YLW := $(shell tput setaf 3)
 BLU := $(shell tput setaf 4)
 EOL := \n
 
-all:
+TAG ?= latest
+
+all: build/manifest.json
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
-	@printf '${BLD}${YLW}$$${RST} '
-	$(MAKE) -C pkg/ all
-	@printf '${BLD}${YLW}$$${RST} '
-	$(MAKE) -C pkr/ all
-	@printf '${BLD}${YLW}$$${RST} '
-	$(MAKE) -C oci/ all
 .PHONY: all
 
 clean:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
-	$(MAKE) -C pkg/ clean
-	@printf '${BLD}${YLW}$$${RST} '
-	$(MAKE) -C pkr/ clean
-	@printf '${BLD}${YLW}$$${RST} '
-	$(MAKE) -C oci/ clean
+	rm -fR build/
 .PHONY: clean
+
+push:
+	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
+	@printf '${BLD}${YLW}$$${RST} '
+	skopeo copy "dir://$$(pwd)/build" 'docker://ghcr.io/inloco/macbox:${TAG}'
+.PHONY: push
+
+build/manifest.json: box2dir.sh ../pkr/packer_macbox_vmware.box 
+	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
+	@printf '${BLD}${YLW}$$${RST} '
+	./box2dir.sh ../pkr/packer_macbox_vmware.box
