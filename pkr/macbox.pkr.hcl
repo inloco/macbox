@@ -67,18 +67,18 @@ source "vmware-iso" "macbox" {
   communicator = "ssh"
   ssh_username = "vagrant"
   ssh_password = "vagrant"
-  ssh_timeout  = "30m"
+  ssh_timeout  = "2h"
 
   # Boot Configuration
-  boot_wait = "1m"
+  boot_wait = "2m"
   boot_command = [
-    "<enter><wait1s250ms>",
-    "<leftSuperOn><f5><leftSuperOff><wait1s250ms>",
+    "<enter><wait6s>",
+    "<leftSuperOn><f5><leftSuperOff><wait1s>",
     "<leftCtrlOn><leftAltOn>m<leftAltOff><leftCtrlOff>",
     "u<enter>",
     "t<enter>",
-    "<leftSuperOn><f5><leftSuperOff><wait1s250ms>",
-    ". /Volumes/packer/install.sh<enter><wait1s250ms>",
+    "<leftSuperOn><f5><leftSuperOff><wait5s>",
+    ". /Volumes/packer/install.sh<enter>",
   ]
 }
 
