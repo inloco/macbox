@@ -20,13 +20,15 @@ SIGPID="${!}"
 VOLNAME='Macintosh HD'
 DIRNAME="$(echo -n "${BASH_SOURCE[0]}" | sed -E 's|^([^/]+)$|./\1|' | sed -E 's|^(.*)/([^/]+)$|\1|')"
 
-for PKG in "${DIRNAME}/MacBox.pkg" /Volumes/VMware*/Install*.app/Contents/Resources/VMware*.pkg
+for PKG in "${DIRNAME}/MacBox.pkg" '/Volumes/VMware Tools/Install VMware Tools.app/Contents/Resources/VMware Tools.pkg'
 do
 	ARGS+=('--installpackage' "${PKG}")
 done
 
 diskutil eraseDisk APFS "${VOLNAME}" disk0
-/Volumes/Image*/Install*.app/Contents/Resources/startosinstall --agreetolicense --pidtosignal "${SIGPID}" --rebootdelay '300' --volume "/Volumes/${VOLNAME}" "${ARGS[@]}"
+
+/System/Installation/CDIS/Installation\ Log.app/Contents/MacOS/Installation\ Log &
+/Volumes/Image\ Volume/Install\ macOS\ *.app/Contents/Resources/startosinstall --agreetolicense --pidtosignal "${SIGPID}" --rebootdelay '300' --volume "/Volumes/${VOLNAME}" "${ARGS[@]}"
 
 kill -s KILL "${SIGPID}"
 
