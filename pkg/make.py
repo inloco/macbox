@@ -135,6 +135,18 @@ def make_calw_home(home='${HOME}'):
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
 
 
+def make_casu():
+    props = {
+        'AutomaticCheckEnabled': False,
+        'AutomaticDownload': False,
+        'AutomaticallyInstallMacOSUpdates': False,
+        'ConfigDataInstall': False,
+        'CriticalUpdateInstall': False,
+    }
+
+    return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
+
+
 def plist2sh(plist, patch=False):
     value_of = lambda e: switch[type(e)](e)
     
@@ -232,6 +244,13 @@ if __name__ == '__main__':
     lw_home_sh = plist2sh(lw_home_plist)
     with open(f'{d}/loginwindow_home.sh', 'wb') as f:
         f.write(lw_home_sh)
+
+    su_plist = make_casu()
+    with open(f'{d}/SoftwareUpdate.plist', 'wb') as f:
+        f.write(su_plist)
+    su_sh = plist2sh(su_plist)
+    with open(f'{d}/SoftwareUpdate.sh', 'wb') as f:
+        f.write(su_sh)
 
     kcpw = make_kcpassword()
     with open(f'{d}/kcpassword', 'wb') as f:
