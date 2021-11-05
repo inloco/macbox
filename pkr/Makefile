@@ -51,4 +51,4 @@ packer_macbox_vmware.box: macbox.pkr.hcl install.sh build/Install\ macOS.cdr ../
 	@printf '${BLD}${YLW}$$${RST} '
 	packer init macbox.pkr.hcl
 	@printf '${BLD}${YLW}$$${RST} '
-	packer build macbox.pkr.hcl
+	packer build -timestamp-ui macbox.pkr.hcl

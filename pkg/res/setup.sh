@@ -28,6 +28,12 @@ else
 	. ./group.sh
 fi
 
+DOMAIN="${VOLBASE}/Library/Preferences/com.apple.commerce"
+. ./commerce.sh
+
+DOMAIN="${VOLBASE}/Library/Preferences/com.apple.SoftwareUpdate"
+. ./SoftwareUpdate.sh
+
 DOMAIN="${VOLBASE}/Library/Preferences/com.apple.screensaver"
 . ./screensaver_root.sh
 

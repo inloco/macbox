@@ -67,7 +67,7 @@ source "vmware-iso" "macbox" {
   communicator = "ssh"
   ssh_username = "vagrant"
   ssh_password = "vagrant"
-  ssh_timeout  = "2h"
+  ssh_timeout  = "1h30m"
 
   # Boot Configuration
   boot_wait = "2m"

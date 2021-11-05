@@ -13,3 +13,5 @@ jobs:
       - run: until vctl system start; do :; done;
       - run: make
       - run: make "TAG=$(git describe --dirty --broken --always)" -C oci push
+      - run: make "TAG=$(git describe --dirty --broken --always)" -C oci latest
+        if: github.ref == 'refs/heads/master'
