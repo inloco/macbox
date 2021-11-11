@@ -11,6 +11,9 @@ jobs:
       - run: brew install packer skopeo
       - run: skopeo login -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}' ghcr.io
       - run: make
+        env:
+          PACKER_LOG: '1'
+          VAGRANT_LOG: debug
       - run: make "TAG=$(git describe --dirty --broken --always)" -C oci push
       - run: make "TAG=$(git describe --dirty --broken --always)" -C oci latest
         if: github.ref == 'refs/heads/master'
