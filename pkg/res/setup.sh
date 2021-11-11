@@ -46,6 +46,12 @@ SUDOER="${VOLBASE}/private/etc/sudoers.d/vagrant"
 mkdir -p "$(dirname "${SUDOER}")"
 printf 'vagrant\t\tALL = (ALL) NOPASSWD: ALL\n' > "${SUDOER}"
 
+PATHS="${VOLBASE}/private/etc/paths"
+sed -Ei '' 's|(/usr/bin)|/usr/local/bin\n\1|g' "${PATHS}"
+sed -Ei '' 's|(/usr/sbin)|/usr/local/sbin\n\1|g' "${PATHS}"
+uniq "${PATHS}" "${PATHS}.uniq"
+mv "${PATHS}.uniq" "${PATHS}"
+
 systemsetup -setsleep Never
 systemsetup -setrestartfreeze off
 
