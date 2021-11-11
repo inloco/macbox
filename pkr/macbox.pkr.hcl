@@ -31,7 +31,7 @@ source "vmware-iso" "macbox" {
   ]
 
   # Shutdown configuration
-  shutdown_command = "sudo /var/root/.local/bin/poweroff"
+  shutdown_command = "sudo /private/var/root/.local/bin/poweroff"
 
   # Hardware configuration
   cores                = 1
