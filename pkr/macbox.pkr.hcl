@@ -54,6 +54,8 @@ source "vmware-iso" "macbox" {
     "smbios.restrictSerialCharset" = "TRUE"
     "smc.present"                  = "TRUE"
     "ulm.disableMitigations"       = "TRUE"
+    "vhv.enable"                   = "TRUE"
+    "vvtd.enable"                  = "TRUE"
   }
   vmx_data_post = {
     "bios.bootorder" = "hdd"
