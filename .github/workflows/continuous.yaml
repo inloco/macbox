@@ -5,13 +5,15 @@ jobs:
     runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
-      - run: brew install packer skopeo
-      - run: brew install --cask packages vagrant vagrant-vmware-utility vmware-fusion
-      - run: skopeo login -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}' ghcr.io
-      - run: vagrant plugin install vagrant-vmware-desktop
+      - run: brew install --cask packages vmware-fusion
       - run: sudo /Applications/VMware\ Fusion.app/Contents/Library/licenses/vmware-licenseTool enter '${{ secrets.VMWARE_FUSION_SERIAL_NUMBER }}' '' '' '12.0' 'VMware Fusion for Mac OS' ''
       - run: until vctl system start; do :; done;
+      - run: brew install packer skopeo
+      - run: skopeo login -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}' ghcr.io
       - run: make
+        env:
+          PACKER_LOG: '1'
+          VAGRANT_LOG: debug
       - run: make "TAG=$(git describe --dirty --broken --always)" -C oci push
       - run: make "TAG=$(git describe --dirty --broken --always)" -C oci latest
         if: github.ref == 'refs/heads/master'

@@ -156,6 +156,17 @@ def make_cac():
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
 
 
+def make_cimse():
+    props = {
+        'Disabled': False,
+        'KeepAlive': True,
+        'Label': 'com.incognia.macbox.ssh-environment',
+        'Program': '/private/var/root/.local/bin/ssh-environment-path-helper',
+    }
+
+    return plistlib.dumps(props, fmt=plistlib.FMT_XML)
+
+
 def plist2sh(plist, patch=False):
     value_of = lambda e: switch[type(e)](e)
     
@@ -176,7 +187,7 @@ def plist2sh(plist, patch=False):
             '-dict' + ('-add ' if patch else ' ') + ' '.join(map(lambda kv: f'"{kv[0]}" {value_of(kv[1])}', e.items())),
     }
 
-    props = plistlib.loads(plist, fmt=plistlib.FMT_BINARY)
+    props = plistlib.loads(plist)
 
     sh = b'#!/bin/sh\n'
     for kv in props.items():
@@ -267,6 +278,13 @@ if __name__ == '__main__':
     c_sh = plist2sh(c_plist)
     with open(f'{d}/commerce.sh', 'wb') as f:
         f.write(c_sh)
+
+    se_plist = make_cimse()
+    with open(f'{d}/ssh-environment.plist', 'wb') as f:
+        f.write(se_plist)
+    se_sh = plist2sh(se_plist)
+    with open(f'{d}/ssh-environment.sh', 'wb') as f:
+        f.write(se_sh)
 
     kcpw = make_kcpassword()
     with open(f'{d}/kcpassword', 'wb') as f:

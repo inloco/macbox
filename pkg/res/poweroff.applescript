@@ -1,2 +1,9 @@
 #!/usr/bin/osascript
-tell application "System Events" to shut down without state saving preference
+
+repeat
+	try
+		tell application "System Events"
+			shut down without state saving preference
+		end tell
+	end try
+end repeat
