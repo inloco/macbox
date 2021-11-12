@@ -1,5 +1,5 @@
 #!/bin/sh
 set -ex
 
-# systemsetup -setremotelogin on
+launchctl load -wF /Library/LaunchDaemons/com.incognia.macbox.ssh-environment.plist
 launchctl load -wF /System/Library/LaunchDaemons/ssh.plist

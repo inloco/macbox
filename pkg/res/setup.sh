@@ -66,14 +66,33 @@ LOGOUTHOOK="$(defaults read ${DOMAIN} LogoutHook)"
 mkdir -p "$(dirname "${LOGOUTHOOK}")"
 cp -f ./logouthook.sh "${LOGOUTHOOK}"
 
-POWEROFF="${HOME}/.local/bin/poweroff"
-mkdir -p "$(dirname "${POWEROFF}")"
+HOMEBIN="${HOME}/.local/bin"
+mkdir -p "${HOMEBIN}"
+
+POWEROFF="${HOMEBIN}/poweroff"
 cp -f ./poweroff.applescript "${POWEROFF}"
+
+SSHENVIRONMENTPATHHELPER="${HOMEBIN}/ssh-environment-path-helper"
+cp -f ./ssh-environment-path-helper.sh "${SSHENVIRONMENTPATHHELPER}"
+
+DOMAIN="${VOLBASE}/Library/LaunchDaemons/com.incognia.macbox.ssh-environment"
+. ./ssh-environment.sh
+
+ETCSSH="${VOLBASE}/private/etc/ssh"
+
+SSHDCONF="${ETCSSH}/sshd_config"
+sed -Ei '' 's/#(PermitUserEnvironment) .+/\1 yes/g' "${SSHDCONF}"
+
+ENVIRONMENT_ROOT="${ETCSSH}/ssh_environment"
+mkfifo "${ENVIRONMENT_ROOT}"
 
 DOTSSH="$(eval echo ~$(id -un 501))/.ssh"
 mkdir -p "${DOTSSH}"
 chown 501:20 "${DOTSSH}"
 chmod 700 "${DOTSSH}"
+
+ENVIRONMENT_HOME="${DOTSSH}/environment"
+ln -s "${ENVIRONMENT_ROOT}" "${ENVIRONMENT_HOME}"
 
 AUTHZEDKEYS="${DOTSSH}/authorized_keys"
 cp -f ./authorized_keys "${AUTHZEDKEYS}"
