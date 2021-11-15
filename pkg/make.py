@@ -162,6 +162,9 @@ def make_cimse():
         'KeepAlive': True,
         'Label': 'com.incognia.macbox.ssh-environment',
         'Program': '/private/var/root/.local/bin/ssh-environment-path-helper',
+        'RunAtLoad': True,
+        'StandardErrorPath': '/Library/Logs/com.incognia.macbox.ssh-environment.log',
+        'StandardOutPath': '/Library/Logs/com.incognia.macbox.ssh-environment.log',
     }
 
     return plistlib.dumps(props, fmt=plistlib.FMT_XML)
