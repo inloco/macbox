@@ -42,7 +42,12 @@ source "vmware-iso" "macbox" {
   usb                  = true
 
   # Run configuration
-  headless = true
+  headless             = true
+  vnc_bind_address     = "0.0.0.0"
+  vnc_port_min         = 5901
+  vnc_port_max         = 5901
+  vnc_disable_password = true
+  vnc_over_websocket   = false
 
   # VMX configuration
   vmx_data = {
