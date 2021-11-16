@@ -1,9 +1,9 @@
-RST := $(shell tput sgr0)
-BLD := $(shell tput bold)
-RED := $(shell tput setaf 1)
-GRN := $(shell tput setaf 2)
-YLW := $(shell tput setaf 3)
-BLU := $(shell tput setaf 4)
+RST := \33[m
+BLD := \33[1m
+RED := \33[31m
+GRN := \33[32m
+YLW := \33[33m
+BLU := \33[34m
 EOL := \n
 
 BOX_NAME ?= incognia/macbox
