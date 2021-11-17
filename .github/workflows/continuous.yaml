@@ -4,16 +4,37 @@ jobs:
   all:
     runs-on: macos-11
     steps:
-      - uses: actions/checkout@v2
-      - run: brew install --cask packages vmware-fusion
-      - run: sudo /Applications/VMware\ Fusion.app/Contents/Library/licenses/vmware-licenseTool enter '${{ secrets.VMWARE_FUSION_SERIAL_NUMBER }}' '' '' '12.0' 'VMware Fusion for Mac OS' ''
-      - run: until vctl system start; do :; done;
-      - run: brew install packer skopeo
-      - run: skopeo login -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}' ghcr.io
-      - run: make
+      - name: install and setup casks
+        run: |
+          brew install --cask packages vmware-fusion
+          sudo /Applications/VMware\ Fusion.app/Contents/Library/licenses/vmware-licenseTool enter '${{ secrets.VMWARE_FUSION_SERIAL_NUMBER }}' '' '' '12.0' 'VMware Fusion for Mac OS' ''
+          until vctl system start; do :; done;
+      - name: install and setup formulae
+        run: |
+          brew install --formula packer skopeo
+          skopeo login -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}' ghcr.io
+      - name: install and setup vnc2webrtc
+        run: |
+          unlink /usr/local/bin/go
+          unlink /usr/local/bin/gofmt
+          curl -LO https://raw.githubusercontent.com/inloco/vnc2webrtc/HEAD/Formula/vnc2webrtc.rb
+          brew install --HEAD ./vnc2webrtc.rb
+          echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>Disabled</key><false/><key>KeepAlive</key><true/><key>Label</key><string>com.incognia.vnc2webrtc</string><key>Program</key><string>/usr/local/bin/vnc2webrtc</string><key>RunAtLoad</key><true/></dict></plist>' > ~/Library/LaunchAgents/com.incognia.vnc2webrtc.plist
+          /usr/libexec/PlistBuddy ~/Library/LaunchAgents/com.incognia.vnc2webrtc.plist -c 'Add :StandardErrorPath string "'"${HOME}"'/Library/Logs/com.incognia.vnc2webrtc.log"'
+          /usr/libexec/PlistBuddy ~/Library/LaunchAgents/com.incognia.vnc2webrtc.plist -c 'Add :StandardOutPath string "'"${HOME}"'/Library/Logs/com.incognia.vnc2webrtc.log"'
+          [ -z '${{ secrets.TURN_ADDR }}' ] || /usr/libexec/PlistBuddy ~/Library/LaunchAgents/com.incognia.vnc2webrtc.plist -c 'Add :EnvironmentVariables dict'
+          [ -z '${{ secrets.TURN_ADDR }}' ] || /usr/libexec/PlistBuddy ~/Library/LaunchAgents/com.incognia.vnc2webrtc.plist -c 'Add :EnvironmentVariables:WEBRTC_CONFIGURATION string "{\"iceServers\":[{\"urls\":[\"turn:${{ secrets.TURN_ADDR }}\"],\"username\":\"${{ secrets.TURN_USER }}\",\"credential\":\"${{ secrets.TURN_PASS }}\"}]}"'
+          launchctl load -wF ~/Library/LaunchAgents/com.incognia.vnc2webrtc.plist
+          (tail -f ~/Library/Logs/com.incognia.vnc2webrtc.log &) | grep -om 1 -E 'https://appr.tc/r/\d+'
+      - name: checkout repository
+        uses: actions/checkout@v2
+      - name: make all
+        run: make
         env:
           PACKER_LOG: '1'
           VAGRANT_LOG: debug
-      - run: make "TAG=$(git describe --dirty --broken --always)" -C oci push
-      - run: make "TAG=$(git describe --dirty --broken --always)" -C oci latest
+      - name: docker push
+        run: make "TAG=$(git describe --dirty --broken --always)" -C oci push
+      - name: docker tag
+        run: make "TAG=$(git describe --dirty --broken --always)" -C oci latest
         if: github.ref == 'refs/heads/master'
