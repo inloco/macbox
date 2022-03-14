@@ -21,6 +21,7 @@ jobs:
       - name: install and setup formulae
         run: |
           brew install packer skopeo
+          sh ./hack/unttify-skopeo.sh
           aws ecr-public get-login-password | skopeo login -u AWS --password-stdin public.ecr.aws
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
