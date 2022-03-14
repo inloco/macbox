@@ -1,5 +1,8 @@
 name: Continuous
-on: push
+on:
+  push:
+    branches:
+      - master
 permissions:
   contents: read
   id-token: write
@@ -7,11 +10,6 @@ jobs:
   all:
     runs-on: macos-11
     steps:
-      - name: aws configure
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/macbox
       - name: checkout repository
         uses: actions/checkout@v2
       - name: install and setup casks
@@ -22,13 +20,20 @@ jobs:
         run: |
           brew install packer skopeo
           sh ./hack/unttify-skopeo.sh
-          aws ecr-public get-login-password | skopeo login -u AWS --password-stdin public.ecr.aws
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
-      - run: make
+      - name: make all
+        run: make
         env:
           PACKER_LOG: '1'
           VAGRANT_LOG: debug
-      - run: make "TAG=$(git describe --dirty --broken --always)" -C oci push
-      - run: make "TAG=$(git describe --dirty --broken --always)" -C oci latest
-        if: github.ref == 'refs/heads/master'
+      - name: aws configure
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/macbox
+      - name: make docker
+        run: |
+          aws ecr-public get-login-password | skopeo login -u AWS --password-stdin public.ecr.aws
+          make "TAG=$(git describe --dirty --broken --always)" -C oci push
+          make "TAG=$(git describe --dirty --broken --always)" -C oci latest
