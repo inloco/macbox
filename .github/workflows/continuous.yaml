@@ -1,5 +1,8 @@
 name: Continuous
 on: push
+permissions:
+  contents: read
+  id-token: write
 jobs:
   all:
     runs-on: macos-11
@@ -7,9 +10,15 @@ jobs:
       - uses: actions/checkout@v2
       - run: brew install --cask packages vmware-fusion
       - run: sudo /Applications/VMware\ Fusion.app/Contents/Library/licenses/vmware-licenseTool enter '${{ secrets.VMWARE_FUSION_SERIAL_NUMBER }}' '' '' '12.0' 'VMware Fusion for Mac OS' ''
-      - run: until vctl system start; do :; done;
+      - run: until vctl system start; do :; done && vctl system stop
       - run: brew install packer skopeo
-      - run: skopeo login -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}' ghcr.io
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/macbox
+      - run: aws ecr-public get-login-password | skopeo login -u AWS --password-stdin public.ecr.aws
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
       - run: make
         env:
           PACKER_LOG: '1'

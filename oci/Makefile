@@ -21,13 +21,13 @@ clean:
 push:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
-	skopeo copy "dir://$$(pwd)/build" 'docker://ghcr.io/inloco/macbox:${TAG}'
+	skopeo copy "dir://$$(pwd)/build" 'docker://public.ecr.aws/incognia/macbox:${TAG}'
 .PHONY: push
 
 latest:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
-	skopeo copy 'docker://ghcr.io/inloco/macbox:${TAG}' 'docker://ghcr.io/inloco/macbox:latest'
+	skopeo copy 'docker://public.ecr.aws/incognia/macbox:${TAG}' 'docker://public.ecr.aws/incognia/macbox:latest'
 .PHONY: push
 
 build/manifest.json: box2dir.sh ../pkr/packer_macbox_vmware.box 
