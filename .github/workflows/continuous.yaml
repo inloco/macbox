@@ -24,6 +24,8 @@ jobs:
           sh ./hack/unttify-skopeo.sh
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+      - name: Dev Runner
+        uses: inloco/actions-dev-runner@HEAD
       - name: make all
         run: make
         env:
