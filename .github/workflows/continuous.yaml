@@ -9,6 +9,11 @@ permissions:
 jobs:
   all:
     runs-on: macos-11
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+      PACKER_LOG: '1'
+      VAGRANT_LOG: debug
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
@@ -16,21 +21,14 @@ jobs:
         run: |
           brew install --cask packages vmware-fusion
           sh ./hack/kickstart-vmware.sh '${{ secrets.VMWARE_FUSION_SERIAL_NUMBER }}'
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
       - name: install and setup formulae
         run: |
           brew install --formula packer parallel skopeo
           sh ./hack/unttify-skopeo.sh
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
       - name: Dev Runner
         uses: inloco/actions-dev-runner@HEAD
       - name: make all
         run: make
-        env:
-          PACKER_LOG: '1'
-          VAGRANT_LOG: debug
       - name: aws configure
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -41,8 +39,6 @@ jobs:
           # skopeo login -u '${{ secrets.DOCKER_USER }}' -p '${{ secrets.DOCKER_PASS }}' docker.io
           skopeo login -u '${{ github.actor }}' -p '${{ github.token }}' ghcr.io
           aws ecr-public get-login-password | skopeo login -u AWS --password-stdin public.ecr.aws
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
       - name: docker push
         shell: '/usr/bin/env parallel --lb :::: {0}'
         run: |
