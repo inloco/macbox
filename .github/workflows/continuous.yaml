@@ -25,8 +25,8 @@ jobs:
         run: |
           brew install --formula packer parallel skopeo
           sh ./hack/unttify-skopeo.sh
-      - name: Dev Runner
-        uses: inloco/actions-dev-runner@HEAD
+      - name: purge frameworks
+        run: sudo ./hack/purge-frameworks.sh
       - name: make all
         run: make
       - name: aws configure
