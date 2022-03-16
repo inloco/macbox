@@ -27,6 +27,7 @@ jobs:
       - name: install and setup formulae
         run: |
           brew install --formula packer parallel skopeo
+          sh ./hack/cite-parallel.sh
           sh ./hack/unttify-skopeo.sh
       - name: purge frameworks
         run: sudo ./hack/purge-frameworks.sh
