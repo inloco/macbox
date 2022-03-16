@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
+      - name: install unttify
+        run: cp ./hack/unttify.py /usr/local/bin/unttify
       - name: install and setup casks
         run: |
           brew install --cask packages vmware-fusion
