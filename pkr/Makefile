@@ -6,6 +6,7 @@ YLW := \033[33m
 BLU := \033[34m
 EOL := \n
 
+MACOS_VERSION ?= 12.6
 BOX_NAME ?= incognia/macbox
 PROVIDER ?= vmware_fusion
 VAGRANT_HOME ?= $(shell printf "$${VAGRANT_HOME:-$${HOME}/.vagrant.d}")
@@ -34,7 +35,7 @@ remove:
 /Applications/Install\ macOS\ *.app:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
 	@printf '${BLD}${YLW}$$${RST} '
-	softwareupdate --fetch-full-installer
+	softwareupdate --fetch-full-installer --full-installer-version ${MACOS_VERSION}
 
 build/...:
 	@printf '${BLD}${RED}make: *** [$@]${RST}${EOL}'
