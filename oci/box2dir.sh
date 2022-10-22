@@ -54,6 +54,7 @@ GITREV="$(git rev-parse HEAD)"
 cat << EOF > "${TMPDIR}/manifest.json"
 {
   "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
   "config": {
     "mediaType": "application/vnd.oci.image.config.v1+json",
     "digest": "sha256:${CONFIGSHA256}",
