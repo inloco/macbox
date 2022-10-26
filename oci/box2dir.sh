@@ -6,9 +6,7 @@ function realpath {
 }
 
 BOXPATH="$(realpath "${1}")"
-BOXSIZE="$(stat -f '%z' "${BOXPATH}")"
 BOXMODIFIED="$(date -ur "$(stat -f '%m' "${BOXPATH}")" '+%Y-%m-%dT%H:%M:%SZ')"
-BOXSHA256="$(shasum -a 256 "${BOXPATH}" | awk '{ print $1 }')"
 
 TMPDIR="$(mktemp -d)"
 
