@@ -9,14 +9,18 @@ BOXPATH="$(realpath "${1}")"
 BOXMODIFIED="$(date -ur "$(stat -f '%m' "${BOXPATH}")" '+%Y-%m-%dT%H:%M:%SZ')"
 
 TMPDIR="$(mktemp -d)"
+TMPTGZ="${TMPDIR}/.tgz"
 
 echo 'Directory Transport Version: 1.1' > "${TMPDIR}/version"
 
 split -b "$((4 * 1024 * 1024 * 1024))" "${BOXPATH}"
 for PART in ./x*
 do
-  PARTSHA256="$(shasum -a 256 "${PART}" | awk '{ print $1 }')"
-  mv "${PART}" "${TMPDIR}/${PARTSHA256}"
+  tgzarmorer "${PART}" > "${TMPTGZ}"
+
+  PARTSHA256="$(shasum -a 256 "${TMPTGZ}" | awk '{ print $1 }')"
+
+  mv "${TMPTGZ}" "${TMPDIR}/${PARTSHA256}"
 
   PARTSHA256S+=("${PARTSHA256}")
 done
@@ -66,7 +70,7 @@ $(
 
     EOL="$([ "${I}" = "${#PARTSHA256S[@]}" ] || echo ',')"
     echo '    {'
-    echo '      "mediaType": "application/vnd.oci.image.layer.v1.tar",'
+    echo '      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",'
     echo '      "digest": "sha256:'"${PARTSHA256}"'",'
     echo '      "size": '"$(stat -f '%z' "${TMPDIR}/${PARTSHA256}")"
     echo '    }'"${EOL}"
