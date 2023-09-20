@@ -67,8 +67,8 @@ source "vmware-iso" "macbox" {
 
   # Communicator configuration
   communicator = "ssh"
-  ssh_username = "runner"
-  ssh_password = "runner"
+  ssh_username = "vagrant"
+  ssh_password = "vagrant"
   ssh_timeout  = "1h30m"
 
   # Boot Configuration
