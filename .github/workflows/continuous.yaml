@@ -9,7 +9,7 @@ permissions:
   packages: write
 jobs:
   all:
-    runs-on: macos-latest
+    runs-on: macos-11
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       GO111MODULE: 'off'
@@ -30,7 +30,7 @@ jobs:
         run: cp ./hack/unttify.py /usr/local/bin/unttify
       - name: install and setup casks
         run: |
-          brew install --cask packages vmware-fusion
+          brew install --cask packages homebrew/cask-versions/vmware-fusion12
           sh ./hack/kickstart-vmware.sh '${{ secrets.VMWARE_FUSION_SERIAL_NUMBER }}'
       - name: install and setup formulae
         run: |
