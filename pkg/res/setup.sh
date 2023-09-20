@@ -9,19 +9,19 @@ DOMAIN="${TPLBASE}/Library/Preferences/com.apple.SetupAssistant"
 
 if [ -z "${VOLBASE}" ]
 then
-	sysadminctl -addUser vagrant -fullName Vagrant -UID 501 -password vagrant -admin
-	# dscl . -create /Users/vagrant
-	# dscl . -create /Users/vagrant GeneratedUID 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
-	# dscl . -create /Users/vagrant NFSHomeDirectory /Users/vagrant
-	# dscl . -create /Users/vagrant PrimaryGroupID 20
-	# dscl . -create /Users/vagrant RealName Vagrant
-	# dscl . -create /Users/vagrant UniqueID 501
-	# dscl . -create /Users/vagrant UserShell /bin/zsh
-	# dscl . -passwd /Users/vagrant vagrant
+	sysadminctl -addUser runner -fullName Runner -UID 501 -password runner -admin
+	# dscl . -create /Users/runner
+	# dscl . -create /Users/runner GeneratedUID 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
+	# dscl . -create /Users/runner NFSHomeDirectory /Users/runner
+	# dscl . -create /Users/runner PrimaryGroupID 20
+	# dscl . -create /Users/runner RealName Runner
+	# dscl . -create /Users/runner UniqueID 501
+	# dscl . -create /Users/runner UserShell /bin/zsh
+	# dscl . -passwd /Users/runner runner
 	# dscl . -append /Groups/admin GroupMembers 00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF
-	# dscl . -append /Groups/admin GroupMembership vagrant
+	# dscl . -append /Groups/admin GroupMembership runner
 else
-	DOMAIN="${VOLBASE}/private/var/db/dslocal/nodes/Default/users/vagrant"
+	DOMAIN="${VOLBASE}/private/var/db/dslocal/nodes/Default/users/runner"
 	. ./user.sh
 
 	DOMAIN="${VOLBASE}/private/var/db/dslocal/nodes/Default/groups/admin"
@@ -42,9 +42,9 @@ DOMAIN="${VOLBASE}/Library/Preferences/com.apple.loginwindow"
 
 cp ./kcpassword "${VOLBASE}/private/etc/kcpassword"
 
-SUDOER="${VOLBASE}/private/etc/sudoers.d/vagrant"
+SUDOER="${VOLBASE}/private/etc/sudoers.d/runner"
 mkdir -p "$(dirname "${SUDOER}")"
-printf 'vagrant\t\tALL = (ALL) NOPASSWD: ALL\n' > "${SUDOER}"
+printf 'runner\t\tALL = (ALL) NOPASSWD: ALL\n' > "${SUDOER}"
 
 PATHS="${VOLBASE}/private/etc/paths"
 sed -Ei '' 's|(/usr/bin)|/usr/local/bin\n\1|g' "${PATHS}"

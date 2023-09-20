@@ -2,7 +2,7 @@ import hashlib
 import plistlib
 
 
-def make_hash(password='vagrant', salt=b'\0'*32, iterations=1):
+def make_hash(password='runner', salt=b'\0'*32, iterations=1):
     entropy = hashlib.pbkdf2_hmac('sha512', bytes(map(ord, password)), salt, iterations, dklen=128)
 
     shadow_hash_data = {
@@ -16,7 +16,7 @@ def make_hash(password='vagrant', salt=b'\0'*32, iterations=1):
     return plistlib.dumps(shadow_hash_data, fmt=plistlib.FMT_BINARY)
 
 
-def make_user(realname='Vagrant', shadow_hash_data=make_hash()):
+def make_user(realname='Runner', shadow_hash_data=make_hash()):
     user = realname.split(' ')[0].lower()
 
     attributes = {
@@ -52,7 +52,7 @@ def make_user(realname='Vagrant', shadow_hash_data=make_hash()):
     return plistlib.dumps(attributes, fmt=plistlib.FMT_BINARY)
 
 
-def make_group(user='vagrant'):
+def make_group(user='runner'):
     props = {
         'groupmembers': [
             '00000000-AAAA-BBBB-CCCC-DDDDEEEEFFFF',
@@ -118,7 +118,7 @@ def make_casa(build_version='$(sw_vers -buildVersion)'):
     return plistlib.dumps(props, fmt=plistlib.FMT_BINARY)
 
 
-def make_calw_root(user='vagrant'):
+def make_calw_root(user='runner'):
     props = {
         'autoLoginUser': user,
     }
@@ -196,7 +196,7 @@ def plist2sh(plist, patch=False):
     return sh
 
 
-def make_kcpassword(password='vagrant'):
+def make_kcpassword(password='runner'):
     key = [0x7D, 0x89, 0x52, 0x23, 0xD2, 0xBC, 0xDD, 0xEA, 0xA3, 0xB9, 0x1F]
     key_len = len(key)
     key_val = lambda i: key[i % key_len]
