@@ -40,7 +40,6 @@ jobs:
       - name: purge frameworks
         run: sudo ./hack/purge-frameworks.sh
       - name: make all
-        shell: '/usr/bin/env parallel --lb --retries 3 :::: {0}'
         run: make
       - name: aws configure
         uses: aws-actions/configure-aws-credentials@v1
