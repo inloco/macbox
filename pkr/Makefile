@@ -6,7 +6,7 @@ YLW := \033[33m
 BLU := \033[34m
 EOL := \n
 
-MACOS_VERSION ?= 12.6.9
+MACOS_VERSION ?= 12.6.8
 BOX_NAME ?= incognia/macbox
 PROVIDER ?= vmware_fusion
 VAGRANT_HOME ?= $(shell printf "$${VAGRANT_HOME:-$${HOME}/.vagrant.d}")
